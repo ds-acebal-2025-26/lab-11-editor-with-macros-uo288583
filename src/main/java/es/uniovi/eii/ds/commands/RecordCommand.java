@@ -32,7 +32,6 @@ public class RecordCommand implements UserCommand {
             // Start interactive recording
             List<UserCommand> macroCommands = new ArrayList<>();
             Scanner scanner = new Scanner(System.in);
-
             while (true) {
                 System.out.print("> ");
                 String line = scanner.nextLine().trim();
