@@ -21,11 +21,11 @@ public class Main {
 	// Main program loop.
     public void run() {
 		drawLogo();
-		commandHandler.execute("help", new String[0]);
+		commandHandler.operate("help", new String[0]);
 
 		while (true) {
 			UserCommand command = promptUser();
-			commandHandler.execute(command.name(), command.args());
+			commandHandler.operate(command.name(), command.args());
 		}
 	}
 
@@ -62,7 +62,6 @@ public class Main {
 			}
 		}
     }
-
 
 	private void exit() {
 		System.out.println("Goodbye!");

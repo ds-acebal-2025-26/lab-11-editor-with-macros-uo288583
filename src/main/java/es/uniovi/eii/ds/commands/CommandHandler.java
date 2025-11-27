@@ -3,58 +3,36 @@ package es.uniovi.eii.ds.commands;
 import es.uniovi.eii.ds.editor.TextEditor;
 import es.uniovi.eii.ds.filesystem.FileSystem;
 
-public class CommandHandler {
-    private final TextEditor editor;
-    private final FileSystem fileSystem;
+import java.util.HashMap;
+import java.util.Map;
 
+public class CommandHandler {
+    private final Map<String, UserCommand> commandMap = new HashMap<>();
+    private final Map<String, UserCommand[]> macros = new HashMap<>();
+    private final TextEditor editor;
     public CommandHandler(TextEditor editor) {
+        FileSystem fileSystem = new FileSystem();
         this.editor = editor;
-        this.fileSystem = new FileSystem();
+
+        commandMap.put("open", new OpenCommand(editor, fileSystem));
+        commandMap.put("insert", new InsertCommand(editor));
+        commandMap.put("delete", new DeleteCommand(editor));
+        commandMap.put("replace", new ReplaceCommand(editor));
+        commandMap.put("help", new HelpCommand());
+        commandMap.put("record", new RecordCommand(macros, this));
+        commandMap.put("execute", new ExecuteCommand(macros));
     }
 
-    public void execute(String command, String[] args) {
-        switch (command) {
-            case "open" -> open(args);
-            case "insert" -> editor.insert(args);
-            case "delete" -> editor.delete();
-            case "replace" -> replace(args);
-            case "help" -> showHelp();
-            default -> System.out.println("Unknown command");
+    public void operate(String command, String[] args) {
+        UserCommand userCommand = commandMap.get(command);
+        if (userCommand == null) {
+            System.out.println("Unknown command");
+            return;
         }
+        userCommand.execute(args);
         System.out.println(editor.getText());
     }
-
-    private void open(String[] args) {
-        if (args.length != 1) {
-            System.out.println("Invalid number of arguments => open <file>");
-            return;
-        }
-        try {
-            String content = fileSystem.readFile(args[0]);
-            editor.setText(content);
-        } catch (Exception e) {
-            System.out.println("Document could not be opened");
-        }
+    public UserCommand getCommand(String commandName) {
+        return commandMap.get(commandName);
     }
-
-    private void replace(String[] args) {
-        if (args.length != 2) {
-            System.out.println("Invalid number of arguments => replace <find> <replace>");
-            return;
-        }
-        editor.replace(args[0], args[1]);
-    }
-
-    private void showHelp() {
-        System.out.println(HELP);
-    }
-
-    private static final String HELP = """
-            ┌──────────────────────┬─────────────────────────────────────────────┐
-            │ open <file>          │                                             │
-            │ insert <text>        │ append text to the end                      │
-            │ delete               │ delete the last word                        │
-            │ replace <a> <b>      │ replace <a> with <b> in the whole document  │
-            └──────────────────────┴─────────────────────────────────────────────┘
-            """;
 }

@@ -1,0 +1,26 @@
+Single Responsibility Principle: 
+Each command is now encapsulated in its own class, making the code easier to maintain and extend.
+Open/Closed Principle: Adding new commands is as simple as creating a new class and 
+registering it in the CommandHandler.
+
+Command Pattern:
+The Command Pattern is a behavioral design pattern that encapsulates a request as an object,
+allowing you to parameterize objects with different requests, queue or log requests,
+and support undoable operations.
+
+How the Command Pattern is Applied:
+Command Interface:
+The UserCommand interface defines a common method (execute) that all commands must implement.
+This ensures that all commands have a uniform way of being executed.
+
+Concrete Command Classes:
+Each command (e.g., OpenCommand, InsertCommand, DeleteCommand, etc.) is implemented as a
+separate class. These classes encapsulate the logic for their respective operations.
+
+Invoker:
+The CommandHandler class acts as the invoker. It stores a mapping of command names to their
+respective UserCommand implementations and delegates the execution of commands.
+
+Receiver:
+The TextEditor class acts as the receiver. It performs the actual operations 
+(e.g., insert, delete, replace) when the commands are executed.
