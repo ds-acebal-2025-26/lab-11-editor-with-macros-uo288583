@@ -3,13 +3,17 @@ package es.uniovi.eii.ds.main;
 import java.io.*;
 import java.util.Arrays;
 
+import es.uniovi.eii.ds.commands.CommandHandler;
+import es.uniovi.eii.ds.editor.TextEditor;
 public class Main {
 
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 	
 	// Represents the document of the editor.
 	StringBuilder text = new StringBuilder();
-
+	TextEditor editor = new TextEditor();
+    CommandHandler commandHandler = new CommandHandler(editor);
+    
     public static void main(String[] args) {
         new Main().run();
     }
@@ -17,90 +21,15 @@ public class Main {
 	// Main program loop.
     public void run() {
 		drawLogo();
-		showHelp();
+		commandHandler.execute("help", new String[0]);
 
 		while (true) {
 			UserCommand command = promptUser();
-			String[] args = command.args;
-
-			switch (command.name) {
-				case "open" -> open(args);
-				case "insert" -> { 
-					for (String word : args) {
-						text.append(" ").append(word);
-					}
-				}
-				case "delete" -> {
-					int indexOfLastWord = text.toString().trim().lastIndexOf(" ");
-					if (indexOfLastWord == -1)
-						text = new StringBuilder("");
-					else
-						text.setLength(indexOfLastWord);
-				}
-				case "replace" -> replace(args);
-				case "help" -> showHelp();
-				case "record" -> {
-					// String macroName = args[0];
-					// ...
-				}
-				case "stop" -> { 
-					// ...
-				}
-				case "execute" -> {
-					// String macroName = args[0];
-					// ...
-				}
-				default -> {
-					System.out.println("Unknown command");
-					continue;
-				}
-			}
-
-			System.out.println(text);
+			commandHandler.execute(command.name(), command.args());
 		}
 	}
 
 	//$-- Some individual user commands that do a bit more work ---------------
-
-	private void open(String[] args) {
-		if (!checkArguments(args, 1, "open <file>"))
-			return;
-		try {
-			String filename = args[0];
-			text = new StringBuilder(readFile(filename));
-		} catch (Exception e) {
-			System.out.println("Document could not be opened");
-		}
-	}
-
-	private String readFile(String filename) {
-		InputStream in = getClass().getResourceAsStream("/" + filename);
-		if (in == null)
-			throw new IllegalArgumentException("File not found: " + filename);
-
-		try (BufferedReader input = new BufferedReader(new InputStreamReader(in))) {
-			StringBuilder result = new StringBuilder();
-			String line;
-			boolean firstLine = true;
-			while ((line = input.readLine()) != null) {
-				if (!firstLine)
-					result.append(System.lineSeparator());
-				result.append(line);
-				firstLine = false;
-			}
-			return result.toString();
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
-
-	private void replace(String[] args) {
-		if (!checkArguments(args, 2, "replace <find> <replace>"))
-			return;
-		String find = args[0];
-		String replace = args[1];
-		text = new StringBuilder(text.toString().replace(find, replace));
-	}
 
 	//$-- Auxiliary methods ---------------------------------------------------
 
@@ -123,8 +52,7 @@ public class Main {
             System.out.print("> ");
             try {
                 String line = in.readLine();
-				if (line == null) System.exit(0);
-				if (line.equals("exit")) exit();
+				if (line == null || line.equals("exit")) exit();
 				if (line.isBlank()) continue;
 				String[] parts = line.split("\\s+");
 				return new UserCommand(parts[0], Arrays.copyOfRange(parts, 1, parts.length));
@@ -135,13 +63,6 @@ public class Main {
 		}
     }
 
-    private boolean checkArguments(String[] args, int expected, String syntax) {
-        if (args.length != expected) {
-            System.out.println("Invalid number of arguments => " + syntax);
-            return false;
-        }
-        return true;
-    }
 
 	private void exit() {
 		System.out.println("Goodbye!");
@@ -152,10 +73,6 @@ public class Main {
 		System.out.println(LOGO);
 	}
 
-	private void showHelp() {
-		System.out.println(HELP);
-	}
-
 	private static final String LOGO = """
 
 			███╗   ███╗ █████╗  ██████╗████████╗███████╗██╗  ██╗
@@ -164,21 +81,5 @@ public class Main {
 			██║╚██╔╝██║██╔══██║██║        ██║   ██╔══╝   ██╔██╗ 
 			██║ ╚═╝ ██║██║  ██║╚██████╗   ██║   ███████╗██╔╝ ██╗
 			╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
-			""";
-
-	private static final String HELP = """
-			┌──────────────────────┬─────────────────────────────────────────────┐
-			│ open <file>          │                                             │
-			│ insert <text>        │ append text to the end                      │
-			│ delete               │ delete the last word                        │
-			│ replace <a> <b>      │ replace <a> with <b> in the whole document  │
-			├──────────────────────┼─────────────────────────────────────────────┤
-			│ record <macro>       │ start recording a macro                     │
-			│ stop                 │ stop recording                              │
-			│ execute <macro>      │ execute the specified macro                 │
-			├──────────────────────┼─────────────────────────────────────────────┤
-			│ help                 │                                             │
-			│ exit                 │                                             │
-			└──────────────────────┴─────────────────────────────────────────────┘
 			""";
 }
