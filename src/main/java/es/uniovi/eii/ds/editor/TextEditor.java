@@ -11,12 +11,19 @@ import es.uniovi.eii.ds.commands.UserCommand;
 public class TextEditor {
     private StringBuilder text = new StringBuilder();
 
+    /**
+     * Inserts words at the end of the text.
+     * @param words Words to be inserted.
+     */
     public void insert(String[] words) {
         for (String word : words) {
             text.append(" ").append(word);
         }
     }
 
+    /**
+     * Deletes the last word from the text.
+     */
     public void delete() {
         int indexOfLastWord = text.toString().trim().lastIndexOf(" ");
         if (indexOfLastWord == -1) {
@@ -26,18 +33,34 @@ public class TextEditor {
         }
     }
 
+    /**
+     * Replaces all occurrences of a substring with another substring.
+     * @param find Substring to find.
+     * @param replace Substring to replace with.
+     */
     public void replace(String find, String replace) {
         text = new StringBuilder(text.toString().replace(find, replace));
     }
 
+    /**
+     * Gets the current text.
+     * @return The current text.
+     */
     public String getText() {
         return text.toString();
     }
 
+    /**
+     * Sets the text to the specified content.
+     * @param content Content to set the text to.
+     */
     public void setText(String content) {
         text = new StringBuilder(content);
     }
 
+    /**
+     * Displays the help panel with available commands.
+     */
     public void help() {
         System.out.println("""
             ┌──────────────────────┬─────────────────────────────────────────────┐
@@ -52,6 +75,12 @@ public class TextEditor {
         """);
     }
 
+    /**
+     * Records a macro by capturing user commands until 'stop' is entered.
+     * @param args 
+     * @param commandHandler Command handler to retrieve commands
+     * @param macros Map to store recorded macros
+     */
     public void recordCommand(String[] args, CommandHandler commandHandler, Map<String,UserCommand[]> macros) {
         try {
             if (args.length != 1) {
@@ -114,6 +143,12 @@ public class TextEditor {
             command.execute(args);
         }
     }
+
+    /**
+     * Executes a recorded macro.
+     * @param args Macro name to execute.
+     * @param macros List of recorded macros.
+     */
     public void executeMacro(String[] args, Map<String,UserCommand[]> macros) {
         if (args.length != 1) {
             System.out.println("Invalid number of arguments => execute <macroName>");
