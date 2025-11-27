@@ -18,9 +18,9 @@ public class CommandHandler {
         commandMap.put("insert", new InsertCommand(editor));
         commandMap.put("delete", new DeleteCommand(editor));
         commandMap.put("replace", new ReplaceCommand(editor));
-        commandMap.put("help", new HelpCommand());
-        commandMap.put("record", new RecordCommand(macros, this));
-        commandMap.put("execute", new ExecuteCommand(macros));
+        commandMap.put("help", new HelpCommand(editor));
+        commandMap.put("record", new RecordCommand(editor, macros, this));
+        commandMap.put("execute", new ExecuteCommand(editor, macros));
     }
 
     public void operate(String command, String[] args) {

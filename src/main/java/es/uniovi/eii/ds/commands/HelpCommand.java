@@ -1,15 +1,15 @@
 package es.uniovi.eii.ds.commands;
 
+import es.uniovi.eii.ds.editor.TextEditor;
+
 public class HelpCommand implements UserCommand {
+    private final TextEditor editor;
+    public HelpCommand(TextEditor editor) {
+        this.editor = editor;
+    }
+
     @Override
     public void execute(String[] args) {
-        System.out.println("""
-            ┌──────────────────────┬─────────────────────────────────────────────┐
-            │ open <file>          │ Open a file                                 │
-            │ insert <text>        │ Append text to the end                      │
-            │ delete               │ Delete the last word                        │
-            │ replace <a> <b>      │ Replace <a> with <b> in the whole document  │
-            └──────────────────────┴─────────────────────────────────────────────┘
-        """);
+        editor.help();
     }
 }
