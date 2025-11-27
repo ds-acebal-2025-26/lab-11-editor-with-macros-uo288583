@@ -68,6 +68,7 @@ public class TextEditor {
 
             // Start interactive recording
             List<UserCommand> macroCommands = new ArrayList<>();
+            @SuppressWarnings("resource")
             Scanner scanner = new Scanner(System.in);
             while (true) {
                 System.out.print("> ");
